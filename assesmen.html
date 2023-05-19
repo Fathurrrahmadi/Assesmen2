@@ -1,44 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Form API</title>
+    <title>Form Validation</title>
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
+    <h1>Form Validation</h1>
     <form id="apiForm">
-        <label for="idInput">ID:</label>
-        <input type="text" id="idInput" name="id" readonly><br>
+        <label for="titleInput">GameID:</label>
+        <input type="text" id="titleInput" name="Title"><br>
+        <span id="titleError" class="error"></span><br>
 
-        <label for="adviceInput">Name:</label>
-        <input type="text" id="adviceInput" name="advice" readonly><br>
+        <label for="contentInput">Name:</label>
+        <input type="text" id="contentInput" name="Content"><br>
+        <span id="contentError" class="error"></span><br>
 
-        <label for="dateInput">Date:</label>
-        <input type="text" id="dateInput" name="date" readonly><br>
+        <label for="statusInput">Date:</label>
+        <input type="text" id="statusInput" name="Status"><br>
+        <span id="statusError" class="error"></span><br>
 
         <button type="submit">Submit</button>
     </form>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $.ajax({
-                url: "https://www.cheapshark.com/api/1.0/deals?upperPrice=15",
-                method: "GET",
-                dataType: "json"
-            }).done(function(data) {
-                var jsonData = data[0];
-                document.getElementById("idInput").value = jsonData.gameID;
-                document.getElementById("adviceInput").value = jsonData.title;
-                document.getElementById("dateInput").value = jsonData.releaseDate;
-
-                $("#apiForm").submit(function(event) {
-                    event.preventDefault();
-
-                    console.log("Form submitted!");
-                });
-            }).fail(function(error) {
-                console.log("Terjadi kesalahan:", error);
-            });
+        document.getElementById("apiForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            validateForm();
         });
+
+        function validateForm() {
+            clearErrors();
+
+            var titleInput = document.getElementById("titleInput");
+            var contentInput = document.getElementById("contentInput");
+            var statusInput = document.getElementById("statusInput");
+
+            var titleError = document.getElementById("titleError");
+            var contentError = document.getElementById("contentError");
+            var statusError = document.getElementById("statusError");
+
+            var isValid = true;
+
+            if (titleInput.value.trim() === "") {
+                titleError.textContent = "Harus ada isi.";
+                isValid = false;
+            }
+
+            if (contentInput.value.trim() === "") {
+                contentError.textContent = "Harus ada isi.";
+                isValid = false;
+            }
+
+            if (statusInput.value.trim() === "") {
+                statusError.textContent = "Harus ada isi.";
+                isValid = false;
+            }
+
+            if (isValid) {
+                console.log("Form submitted!");
+            }
+        }
+
+        function clearErrors() {
+            var errorElements = document.getElementsByClassName("error");
+            for (var i = 0; i < errorElements.length; i++) {
+                errorElements[i].textContent = "";
+            }
+        }
     </script>
 </body>
 </html>
