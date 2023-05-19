@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tampilan Deals CheapShark</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $.ajax({
+        url: "https://www.cheapshark.com/api/1.0/deals?upperPrice=15",
+        method: "GET",
+        dataType: "json"
+      }).done(function(data) {
+        // Tangkap data dan proses
+        var deals = data;
+
+        // Buat elemen HTML untuk menampilkan data
+        var table = $("<table></table>").addClass("deals-table");
+        var tableHead = $("<thead></thead>");
+        var tableBody = $("<tbody></tbody>");
+        var tableHeadRow = $("<tr></tr>");
+        var gameIDHeader = $("<th></th>").text("Game ID");
+        var titleHeader = $("<th></th>").text("Title");
+        var releaseDateHeader = $("<th></th>").text("Release Date");
+        var salePriceHeader = $("<th></th>").text("Sale Price");
+
+        tableHeadRow.append(gameIDHeader, titleHeader, releaseDateHeader, salePriceHeader);
+        tableHead.append(tableHeadRow);
+        table.append(tableHead, tableBody);
+
+        // Tambahkan data ke dalam tabel
+        $.each(deals, function(index, deal) {
+          var dataRow = $("<tr></tr>");
+          var gameIDData = $("<td></td>").text(deal.gameID);
+          var titleData = $("<td></td>").text(deal.title);
+
+          // Ubah format tanggal menjadi tanggal yang mudah dibaca
+          var releaseDate = new Date(deal.releaseDate * 1000);
+          var releaseDateData = $("<td></td>").text(releaseDate.toLocaleDateString());
+
+          var salePriceData = $("<td></td>").text("$" + deal.salePrice);
+
+          dataRow.append(gameIDData, titleData, releaseDateData, salePriceData);
+          tableBody.append(dataRow);
+        });
+
+        // Tampilkan tabel di dalam elemen dengan ID "deals-container"
+        $("#deals-container").append(table);
+      }).fail(function(error) {
+        // Tangani jika terjadi kesalahan
+        console.log("Terjadi kesalahan:", error);
+      });
+    });
+
+    // Validasi form
+    function validateForm() {
+      var name = document.forms["myForm"]["name"].value;
+      var email = document.forms["myForm"]["email"].value;
+
+      if (name == "") {
+        alert("Nama harus diisi");
+        return false;
+      }
+
+      if (email == "") {
+        alert("Email harus diisi");
+        return false;
+      }
+    }
+
+    // Fungsi untuk melakukan pencarian
+    function searchTable() {
+      var input = document.getElementById("search-input").value.toLowerCase();
+      var table = document.getElementById("deals-table");
+      var rows = table.getElementsByTagName("tr");
+
+      // Loop melalui baris tabel dan sembunyikan yang tidak sesuai dengan kriteria pencarian
+      for (var i = 0; i < rows.length; i++) {
+        var cells = rows[i].getElementsByTagName("td");
+        var matchFound = false;
+
+        for (var j = 0; j < cells.length; j++) {
+          var cellData = cells[j].textContent || cells[j].innerText;
+
+          if (cellData.toLowerCase().indexOf(input) > -1) {
+            matchFound = true;
+            break;
+          }
+        }
+
+        if (matchFound) {
+          rows[i].style.display = "";
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+  </script>
+  <style>
+    .deals-table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .deals-table th, .deals-table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tabel Deals CheapShark</h1>
+  <div id="deals-container"></div>
+
+  <h2>Formulir Pencarian</h2>
+  <input type="text" id="search-input" placeholder="Cari...">
+  <button type="button" onclick="searchTable()">Cari</button>
+
+  <table id="deals-table" class="deals-table">
+    <thead>
+      <tr>
+        <th>Game ID</th>
+        <th>Title</th>
+        <th>Release Date</th>
+        <th>Sale Price</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</body>
+</html>
