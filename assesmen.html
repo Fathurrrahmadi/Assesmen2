@@ -1,67 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tampilan Deals CheapShark</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      $.ajax({
-        url: "https://www.cheapshark.com/api/1.0/deals?upperPrice=15",
-        method: "GET",
-        dataType: "json"
-      }).done(function(data) {
-        var deals = data;
-
-
-        var table = $("<table></table>").addClass("deals-table");
-        var tableHead = $("<thead></thead>");
-        var tableBody = $("<tbody></tbody>");
-        var tableHeadRow = $("<tr></tr>");
-        var gameIDHeader = $("<th></th>").text("Game ID");
-        var titleHeader = $("<th></th>").text("Title");
-        var releaseDateHeader = $("<th></th>").text("Release Date");
-        var salePriceHeader = $("<th></th>").text("Sale Price");
-
-        tableHeadRow.append(gameIDHeader, titleHeader, releaseDateHeader, salePriceHeader);
-        tableHead.append(tableHeadRow);
-        table.append(tableHead, tableBody);
-
-
-        $.each(deals, function(index, deal) {
-          var dataRow = $("<tr></tr>");
-          var gameIDData = $("<td></td>").text(deal.gameID);
-          var titleData = $("<td></td>").text(deal.title);
-          var releaseDate = new Date(deal.releaseDate * 1000);
-          var releaseDateData = $("<td></td>").text(releaseDate.toLocaleDateString());
-
-          var salePriceData = $("<td></td>").text("$" + deal.salePrice);
-
-          dataRow.append(gameIDData, titleData, releaseDateData, salePriceData);
-          tableBody.append(dataRow);
-        });
-
-
-        $("#deals-container").append(table);
-      }).fail(function(error) {
-        console.log("Terjadi kesalahan:", error);
-      });
-    });
-  </script>
-  <style>
-    .deals-table {
-      border-collapse: collapse;
-      width: 100%;
-    }
-
-    .deals-table th, .deals-table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-  </style>
+    <title>Form API</title>
 </head>
 <body>
-  <h1>Tabel Deals CheapShark</h1>
-  <div id="deals-container"></div>
+    <form id="apiForm">
+        <label for="idInput">ID:</label>
+        <input type="text" id="idInput" name="id" readonly><br>
+
+        <label for="adviceInput">Name:</label>
+        <input type="text" id="adviceInput" name="advice" readonly><br>
+
+        <label for="dateInput">Date:</label>
+        <input type="text" id="dateInput" name="date" readonly><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "https://www.cheapshark.com/api/1.0/deals?upperPrice=15",
+                method: "GET",
+                dataType: "json"
+            }).done(function(data) {
+                var jsonData = data[0];
+                document.getElementById("idInput").value = jsonData.gameID;
+                document.getElementById("adviceInput").value = jsonData.title;
+                document.getElementById("dateInput").value = jsonData.releaseDate;
+
+                $("#apiForm").submit(function(event) {
+                    event.preventDefault();
+
+                    console.log("Form submitted!");
+                });
+            }).fail(function(error) {
+                console.log("Terjadi kesalahan:", error);
+            });
+        });
+    </script>
 </body>
 </html>
